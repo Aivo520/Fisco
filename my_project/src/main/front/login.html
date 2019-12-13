@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+        <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+        <script type="text/javascript">
+            window.onload = function() {
+                var vm = new Vue({
+                    el:'#login',
+                    data: {
+                        msg:'Hello World!',
+                    },
+                    methods: {
+                        loginUser:function() {
+                            var company_name = document.getElementsByName("company_name").item(0).value;
+                            var private_key = document.getElementsByName("private_key").item(0).value;
+                            if (company_name == "" || private_key == "") {
+                                document.getElementById("sign").innerHTML = "任何字段不能为空!";
+                            }
+                            else {
+                                this.$http.get(
+                                    '/login/' + company_name + "/" + private_key
+                                ).then(function(res) {
+                                    var json_obj = JSON.parse(res.bodyText);
+                                    if (json_obj.ret_code == "0") {
+                                        this.gotoUser();
+                                    } else {
+                                        document.getElementById("sign").innerHTML = "Failed to register!";
+                                    }
+                                },
+                                function() {
+                                    console.log('请求失败处理');
+                                    document.getElementById("sign").innerHTML = "Error: failed to login!";
+                                });
+                            }
+                        }, 
+                        
+                        gotoUser: function() {
+                            var company_name = document.getElementsByName("company_name").item(0).value;
+                            var private_key = document.getElementsByName("private_key").item(0).value;
+                            var jumper = "<a href='http://127.0.0.1:8080/index/" + company_name + "/" + private_key + "'>登录成功，点击此处跳转</a>";
+                            console.log(jumper)
+                            document.write(jumper)
+                        }, 
+                        
+                    }
+                });
+            };
+        </script>
+
+        <style type="text/css">
+            body{
+                text-align: center
+            }
+            h1 {
+                margin-bottom: 100px
+            }
+            input{
+                margin: 0px 10px 15px 10px
+            }
+            a {
+               margin-left: 20px 
+            }
+            #sign {
+                color: red;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <h1>用户登录</h1>
+        <div>
+            公司名称: <input type="text" name="company_name"><br/>
+            账户秘钥: <input type="password" name="private_key"><br/>
+            <button id="login" @click="loginUser()">登录</button><a href="http://127.0.0.1:8080/register">注册</a><br/>
+            <span id="sign"></span>
+            
+        </div>
+    </body>
+</html>

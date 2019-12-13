@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+        <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+        <script type="text/javascript">
+            window.onload = function() {
+                var vm = new Vue({
+                    el:'#register',
+                    data:{
+                        msg:'Hello World!',
+                    },
+                    methods:{
+                        registerUser:function() {
+                            var company_name = document.getElementsByName("company_name").item(0).value;
+                            var company_address = document.getElementsByName("company_address").item(0).value;
+                            var company_asset = document.getElementsByName("company_asset").item(0).value;
+                            if (company_name == "" || company_address == "" || company_asset == "" || isNaN(company_asset)) {
+                                document.getElementById("sign").innerHTML = "请确保信息填写正确!";
+                            }
+                            else {
+                                this.$http.get(
+                                    '/register/' + company_name + "/" + company_address + "/" + company_asset
+                                ).then(function(res) {
+                                    var json_obj = JSON.parse(res.bodyText);
+                                    if (json_obj.ret_code == "0") {
+                                        var header = "<h>账户信息</h>";
+                                        var account = "<p>账户地址: " + json_obj.account + "</p>";
+                                        var public_key = "<p>公钥: " + json_obj.public_key + "</p>";
+                                        var private_key = "<p>私钥: " + json_obj.private_key + "</p>";
+                                        var jumper = "<p><a href='http://127.0.0.1:8080/login'>点击此处跳转登录...</a></p>"
+                                        document.write(header + account + public_key + private_key + jumper);
+                                    } else {
+                                        document.getElementById("sign").innerHTML = "Failed to register!";
+                                    }
+                                },
+                                function() {
+                                    console.log('请求失败处理');
+                                    document.getElementById("sign").innerHTML = "Error: failed to register!";
+                                });
+                            }
+                        }
+                    }
+                });
+            };
+        </script>
+
+        <style type="text/css">
+            body {
+                text-align: center
+            }
+            #company_name {
+                margin: 100px 10px 20px 15px
+            }
+            #company_address {
+                margin: 10px 10px 20px 15px
+            }
+            #company_asset {
+                margin: 10px 10px 20px 10px
+            }
+            a {
+                margin-left: 20px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <h1>用户注册</h1>
+        <div>
+            <div id="company_name">
+                公司名称: <input type="text" name="company_name"><br/>
+            </div>
+            <div id="company_address">
+                公司地址: <input type="text" name="company_address"><br/>
+            </div>
+            <div id="company_asset">
+                公司资产值: <input type="text" name="company_asset"><span>元</span><br/>
+            </div>
+            
+            <button id="register" @click="registerUser()">注册</button><a href="http://127.0.0.1:8080/login">返回登录</a><br/>
+            <span id="sign"></span>
+            
+        </div>
+    </body>
+</html>

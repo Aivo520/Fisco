@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+        <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+        <script type="text/javascript">
+            var vm;
+            window.onload = function() {
+                vm = new Vue({
+                    el:'#content',
+                    data:{
+                        msg:'Hello World!',
+                    },
+                    methods: {
+                        myLend:function() {
+                            var company_name = document.getElementById("company_name").innerHTML;
+                            var private_key = document.getElementById("private_key").innerHTML;
+                            var other_company = document.getElementById("other_name1").value;
+                            var amount = document.getElementById("amount1").value;
+                            
+                            if (company_name == "" || private_key == "" || isNaN(amount) || amount <= 0) {
+                                document.getElementById("sign1").innerHTML = "请核验数额信息!";
+                            }
+                            else {
+                                this.$http.get(
+                                    '/lend/' + company_name + "/" + private_key + "/" + other_company + "/" + amount
+                                ).then(function(res) {
+                                    var json_obj = JSON.parse(res.bodyText);
+                                    if (json_obj.ret_code == "0") {
+                                        document.getElementById("sign1").innerHTML = "成功开具!";
+                                    } else {
+                                        document.getElementById("sign1").innerHTML = "开具失败，请核验信息!";
+                                    }
+                                },
+                                function() {
+                                    console.log('请求失败处理');
+                                    document.getElementById("sign1").innerHTML = "Error: failed to lend!";
+                                });
+                            }
+                        },
+                        
+                        myTransfer:function() {
+                            var company_name = document.getElementById("company_name").innerHTML;
+                            var private_key = document.getElementById("private_key").innerHTML;
+                            var creditor_company = document.getElementById("other_name2").value;
+                            var debitor_company = document.getElementById("other_name3").value;
+                            var amount = document.getElementById("amount2").value;
+                            
+                            if (company_name == "" || private_key == "" || isNaN(amount) || amount <= 0) {
+                                document.getElementById("sign2").innerHTML = "请核验数额信息!";
+                            }
+                            else {
+                                this.$http.get(
+                                    '/transfer/' + company_name +"/" + private_key + "/" + debitor_company + "/" + creditor_company + "/" + amount
+                                ).then(function(res) {
+                                    var json_obj = JSON.parse(res.bodyText);
+                                    if (json_obj.ret_code == "0") {
+                                        document.getElementById("sign2").innerHTML = "成功转移!";
+                                    } else {
+                                        document.getElementById("sign2").innerHTML = "转移失败，请核验信息!";
+                                    }
+                                },
+                                function() {
+                                    console.log('请求失败处理');
+                                    document.getElementById("sign2").innerHTML = "Error: failed to transfer!";
+                                });
+                            }
+                        }, 
+                        
+                        myFinance:function() {
+                            var company_name = document.getElementById("company_name").innerHTML;
+                            var private_key = document.getElementById("private_key").innerHTML;
+                            var bank_name = document.getElementById("other_name4").value;
+                            var amount = document.getElementById("amount3").value;
+                            
+                            if (company_name == "" || private_key == "" || isNaN(amount) || amount <= 0) {
+                                document.getElementById("sign3").innerHTML = "请核验数额信息!";
+                            }
+                            else {
+				var querys = '/finance/' + company_name + "/" + private_key + "/" + bank_name + "/" + amount;
+				console.log(querys);
+                                this.$http.get(
+                                    querys
+                                ).then(function(res) {
+                                    var json_obj = JSON.parse(res.bodyText);
+                                    if (json_obj.ret_code == "0") {
+                                        document.getElementById("sign3").innerHTML = "成功融资!";
+					document.getElementById("company_asset").innerHTML = document.getElementById("company_asset").innerHTML - 0 + (amount - 0);
+                                    } else {
+                                        document.getElementById("sign3").innerHTML = "融资失败，请核验信息!";
+                                    }
+                                },
+                                function() {
+                                    console.log('请求失败处理');
+                                    document.getElementById("sign3").innerHTML = "Error: failed to finance!";
+                                });
+                            }
+                        }, 
+                        myRepay:function() {
+                            var company_name = document.getElementById("company_name").innerHTML;
+                            var private_key = document.getElementById("private_key").innerHTML;
+                            var other_company = document.getElementById("other_name5").value;
+                            var amount = document.getElementById("amount4").value;
+                            
+                            if (company_name == "" || private_key == "" || isNaN(amount) || amount <= 0) {
+                                document.getElementById("sign4").innerHTML = "请核验数额信息!";
+                            }
+                            else {
+                                this.$http.get(
+                                    '/repay/' + company_name + "/" + private_key + "/" + other_company + "/" + amount
+                                ).then(function(res) {
+                                    var json_obj = JSON.parse(res.bodyText);
+                                    if (json_obj.ret_code == "0") {
+                                        document.getElementById("sign4").innerHTML = "成功还款!";
+					document.getElementById("company_asset").innerHTML = document.getElementById("company_asset").innerHTML - amount;
+                                    } else {
+                                        document.getElementById("sign4").innerHTML = "还款失败，请核验信息!";
+                                    }
+                                },
+                                function() {
+                                    console.log('请求失败处理');
+                                    document.getElementById("sign4").innerHTML = "Error: failed to repay!";
+                                });
+                            }
+                        }, 
+                    }
+                });
+            };
+            function lend() {
+                vm.myLend();
+            }
+                
+            function transfer() {
+                vm.myTransfer();
+            }
+            
+            function finance() {
+                vm.myFinance();
+            }
+            
+            function repay() {
+                vm.myRepay();
+            }
+        </script>
+
+        <style type="text/css">
+            h1 {
+                margin-bottom: 100px;
+                text-align: center;
+            }
+            input{
+                margin: 0px 10px 15px 10px
+            }
+            .hide {
+                visibility: hidden;
+            }
+            .sign {
+                color: red;
+            }
+            #company_massage {
+                text-align: center;
+            }
+            .box {
+                margin: 100px 50px 0px 50px;
+                text-align: center;
+                float: left;
+                border: 2px solid gray;
+            }
+            #first_line, #second_line {
+                display: block;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <h1>用户主页</h1>
+        <div id="content">
+            <div id="company_massage">
+                <p>公司名称: <span id="company_name">%company_name%</span></p>
+                <p>公司资产: <span id="company_asset">%company_asset%</span>元</p>
+                <p>公司地址: <span id="company_address">%company_address%</span></p>
+                <p class="hide">公司私钥: <span id="private_key">%private_key%</span></p>
+                <p><a href="http://127.0.0.1:8080/login">退出登录</a></p>
+            </div>
+            <div id="first_line">
+                <div class="box" id="lend_box">
+                    <h3>开具借单</h3>
+                    <p>借方公司：<input type="text" name="other_company_name" id="other_name1"></p>
+                    <p>数额：<input type="text" name="amount" id="amount1">元</p>
+                    <button id="lend" onclick="lend()">开具</button>
+                    <p class="sign" id="sign1"></p>
+                </div>
+
+                <div class="box" id="transfer_box">
+                    <h3>应收账款转移</h3>
+                    <p>贷方公司：<input type="text" name="other_company_name" id="other_name2"></p>
+                    <p>借方公司：<input type="text" name="other_company_name" id="other_name3"></p>
+                    <p>数额：<input type="text" name="amount" id="amount2">元</p>
+                    <button id="transfer" onclick="transfer()">转移</button>
+                    <p class="sign" id="sign2"></p>
+                </div>
+            </div>
+            
+            <div id="second_line">
+                <div class="box" id="finance_box">
+                    <h3>融资</h3>
+                    <p>乙方银行：<input type="text" name="other_company_name" id="other_name4"></p>
+                    <p>数额：<input type="text" name="amount" id="amount3">元</p>
+                    <button id="finance" onclick="finance()">融资</button>
+                    <p class="sign" id="sign3"></p>
+                </div>
+
+                <div class="box" id="repay_box">
+                    <h3>偿还账款</h3>
+                    <p>乙方公司或银行：<input type="text" name="other_company_name" id="other_name5"></p>
+                    <p>数额：<input type="text" name="amount" id="amount4">元</p>
+                    <button id="repay" onclick="repay()">偿还借款</button>
+                    <p class="sign" id="sign4"></p>
+                </div>
+            </div>
+            
+        </div>
+    </body>
+</html>
