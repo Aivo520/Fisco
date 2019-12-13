@@ -1,13 +1,13 @@
 ### 运行方法: 
-`cd my_project`
-`java -jar build/libs/gs-rest-service-0.1.0`
-稍候几秒，等待服务器部署完成后，打开浏览器，访问`http://localhost:8080/login`
+`cd my_project`   
+`java -jar build/libs/gs-rest-service-0.1.0`  
+稍候几秒，等待服务器部署完成后，打开浏览器，访问`http://localhost:8080/login`   
 
 ### 相关代码
-合约代码：contract/Company.sol
-链端代码：src/main/java/fisco/*.java
-后端代码：src/main/java/webserver/*.java
-前端代码：src/main/front/*.*
+合约代码：contract/Company.sol   
+链端代码：src/main/java/fisco/*.java   
+后端代码：src/main/java/webserver/*.java   
+前端代码：src/main/front/*.*   
 
 ### 加分项
 新增注册、登录功能。
